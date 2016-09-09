@@ -54,5 +54,18 @@ def downSampleMP3(src):
     s1 = AudioSegment.from_wav("wav/{}DS.wav".format(src))
     s1.export("mp3/{}DS.mp3".format(src), format="mp3")
     
+def unitSelection(src):
+    sample = AudioSegment.from_mp3("mp3/{}".format(src))
+    sliceSize = 500
+    tempSrc = str(src)[:-4]
+    print tempSrc
+    sample[:sliceSize].export("mp3/{}Unit.mp3".format(tempSrc))
+    
+unitSelection("RainsDS.mp3")
+    
+    
+    
+    
+    
 
     
