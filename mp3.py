@@ -48,23 +48,38 @@ def downsampleWav(src, dst, inrate=44100, outrate=22050, inchannels=1, outchanne
     return True
     
 def downSampleMP3(src):
-    s = AudioSegment.from_mp3("mp3/{}.mp3".format(src))
-    s.export("wav/{}.wav".format(src), format="wav")
-    downsampleWav("wav/{}.wav".format(src),"wav/{}DS.wav".format(src))
-    s1 = AudioSegment.from_wav("wav/{}DS.wav".format(src))
-    s1.export("mp3/{}DS.mp3".format(src), format="mp3")
-    
-def unitSelection(src):
-    sample = AudioSegment.from_mp3("mp3/{}".format(src))
-    sliceSize = 500
+    s = AudioSegment.from_mp3("mp3/{}".format(src))
     tempSrc = str(src)[:-4]
-    print tempSrc
-    sample[:sliceSize].export("mp3/{}Unit.mp3".format(tempSrc))
+    s.export("wav/{}.wav".format(tempSrc), format="wav")
+    downsampleWav("wav/{}.wav".format(tempSrc),"wav/{}DS.wav".format(tempSrc))
+    s1 = AudioSegment.from_wav("wav/{}DS.wav".format(tempSrc))
+    s1.export("mp3/{}DS.mp3".format(tempSrc), format="mp3")
+    return "{}DS.mp3".format(tempSrc)
     
-unitSelection("RainsDS.mp3")
+def unitSelection(src, sliceSize):
+    sample = AudioSegment.from_mp3("mp3/{}".format(src))
+    tempSrc = str(src)[:-4]
+    print sample.duration_seconds
+    previousSlice = 0
+    currentSlice = sliceSize
+    counter = 0
+    while currentSlice < sample.duration_seconds * 1000:
+        sample[previousSlice:currentSlice].export("mp3/units/{}Unit{}.mp3".format(tempSrc, counter), format="mp3")
+        previousSlice = currentSlice
+        currentSlice += sliceSize
+        counter += 1
+
+def main(filename,downsample,sliceSize):
+    if downsample == True:
+        tempFile = downSampleMP3(filename)
+        unitSelection(tempFile,sliceSize)
+    else:
+        unitSelection(filename,sliceSize)
     
-    
-    
+#mp3 file must be in mp3/file before passing in filename
+#False to indicate whether you want to downsample
+#indicate sliceSize        
+main("RainsDS.mp3",False,500)
     
     
 
